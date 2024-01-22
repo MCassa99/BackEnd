@@ -30,10 +30,13 @@ class ProductManager {
      }
 }
 
+/*
+//TESTING
+//Create instance of ProductManager
 let instance = new ProductManager();
-
+//See all products
 console.log(instance.getProducts());
-
+//Create product 1
 const product1 = {
      title: "Product 1",
      description: "Description 1",
@@ -42,7 +45,7 @@ const product1 = {
      code: "P1",
      stock: 10,
 };
-
+//Create product 2
 const product2 = {
      title: "Product 2",
      description: "Description 2",
@@ -64,3 +67,4 @@ instance.addProduct(product2);
 console.log(instance.getProductById(product1.id));
 //See all products
 console.log(instance.getProducts());
+*/
