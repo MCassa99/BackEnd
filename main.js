@@ -9,9 +9,9 @@ const product1V2 = new Product("Product 1", "Description 5", 100, "https://cdn3.
 
 const productManager = new ProductManager('./products.json');
 
-//TESTING
+//TESTING (CUIDADO CON LOS CAMPOS 'reemplazar con ID')
 //#1
-// productManager.getProducts();
+productManager.getProducts();
 
 //#2
 //Add product 1
@@ -26,14 +26,14 @@ productManager.addProduct(product1);
 //Add product 2
 productManager.addProduct(product2);
 //Find product 2 by id
-productManager.getProductById(product2.id);
+productManager.getProductById('reemplazar con ID');
 //Modify product 1 for product1V2
-productManager.modifyProduct(product1.id, product1V2);
+productManager.modifyProduct('reemplazar con ID', product1V2);
 //See all products
 productManager.getProducts();
 
 //#4
 //Delete product 2
-productManager.deleteProduct(product2.id);
+productManager.deleteProduct('reemplazar con ID');
 //See all products
 productManager.getProducts();

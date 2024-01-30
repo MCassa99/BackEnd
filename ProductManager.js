@@ -34,13 +34,14 @@ export class ProductManager {
      }
 
      async modifyProduct(id, product) {
-          const { title, description, price, thumbnail, code, stock } = JSON.parse(await fs.readFile(this.path, "utf-8"));
+          const products = JSON.parse(await fs.readFile(this.path, "utf-8"));
+          const { title, description, price, thumbnail, code, stock } = product;
 
           if (title && description && price && thumbnail && code && stock) {
-               const index = this.products.findIndex((p) => p.id === id);
+               const index = products.findIndex((p) => p.id === id);
                if (index !== -1) {
-                    this.products[index] = { ...product, id };
-                    await fs.writeFile(products, JSON.stringify(this.products, null, "\t"));
+                    products[index] = { ...product, id };
+                    await fs.writeFile(this.path, JSON.stringify(products, null, "\t"));
                     return "Product modified successfully";
                } else {
                     console.log("Product not found");
@@ -51,11 +52,11 @@ export class ProductManager {
      }
 
      async deleteProduct(id) {
-          const products = JSON.parse(await fs.readFile(product, "utf-8"));
-          const index = this.products.findIndex((product) => product.id === id);
+          const products = JSON.parse(await fs.readFile(this.path, "utf-8"));
+          const index = products.findIndex((product) => product.id === id);
           if (index !== -1) {
                const productsFiltered = products.filter((product) => product.id !== id);
-               await fs.writeFile(products, JSON.stringify(productsFiltered, null, "\t"));
+               await fs.writeFile(this.path, JSON.stringify(productsFiltered));
                return "Product deleted successfully";
           } else {
                console.log("Product not found");
