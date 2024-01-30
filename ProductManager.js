@@ -1,18 +1,30 @@
-import crypto from "crypto";
+import { promises as fs} from "fs";
 
-class ProductManager {
-     constructor() {
-          this.products = [];
+export class ProductManager {
+     constructor(path) {
+          this.path = path;
      }
 
-     addProduct(product) {
-          const { title, description, price, thumbnail, code, stock } = product;
+     async getProducts() {
+          const products = JSON.parse(await fs.readFile(this.path, "utf-8"));
+          console.log(products);
+     }
+          
+     async getProductById(id) {
+          const products = JSON.parse(await fs.readFile(this.path, "utf-8"));
+          console.log(products.find((product) => product.id == id) ? products.find((product) => product.id == id) : "Product not found");
+     }
+
+     async addProduct(newProduct) {
+          const { title, description, price, thumbnail, code, stock } = newProduct;
+          const products = JSON.parse(await fs.readFile(this.path, 'utf-8'));
 
           if (title && description && price && thumbnail && code && stock) {
-               const index = this.products.findIndex((p) => p.code === product.code);
+               const index = products.findIndex((p) => p.code === newProduct.code);
                if (index === -1) {
-                    product.id = crypto.randomBytes(16).toString("hex");
-                    this.products.push(product);
+                    products.push(newProduct);
+                    await fs.writeFile(this.path, JSON.stringify(products));
+                    console.log ("Product added successfully");
                } else {
                     console.log("Product already exists");
                }
@@ -21,50 +33,32 @@ class ProductManager {
           }
      }
 
-     getProducts() {
-          return this.products;
+     async modifyProduct(id, product) {
+          const { title, description, price, thumbnail, code, stock } = JSON.parse(await fs.readFile(this.path, "utf-8"));
+
+          if (title && description && price && thumbnail && code && stock) {
+               const index = this.products.findIndex((p) => p.id === id);
+               if (index !== -1) {
+                    this.products[index] = { ...product, id };
+                    await fs.writeFile(products, JSON.stringify(this.products, null, "\t"));
+                    return "Product modified successfully";
+               } else {
+                    console.log("Product not found");
+               }
+          } else {
+               console.log("Invalid product data. Product must have title, description, price, thumbnail, code, and stock.");
+          }
      }
-     
-     getProductById(id) {
-          return this.products.find((product) => product.id == id) ? this.products.find((product) => product.id == id) : "Product not found";
+
+     async deleteProduct(id) {
+          const products = JSON.parse(await fs.readFile(product, "utf-8"));
+          const index = this.products.findIndex((product) => product.id === id);
+          if (index !== -1) {
+               const productsFiltered = products.filter((product) => product.id !== id);
+               await fs.writeFile(products, JSON.stringify(productsFiltered, null, "\t"));
+               return "Product deleted successfully";
+          } else {
+               console.log("Product not found");
+          }
      }
 }
-
-/*
-//TESTING
-//Create instance of ProductManager
-let instance = new ProductManager();
-//See all products
-console.log(instance.getProducts());
-//Create product 1
-const product1 = {
-     title: "Product 1",
-     description: "Description 1",
-     price: 100,
-     thumbnail: "https://cdn3.iconfinder.com/data/icons/education-209/64/bus-vehicle-transport-school-256.png",
-     code: "P1",
-     stock: 10,
-};
-//Create product 2
-const product2 = {
-     title: "Product 2",
-     description: "Description 2",
-     price: 200,
-     thumbnail: "https://cdn3.iconfinder.com/data/icons/education-209/64/bus-vehicle-transport-school-256.png",
-     code: "P2",
-     stock: 20,
-};
-//Add product 1
-instance.addProduct(product1);
-//See all products
-console.log(instance.getProducts());
-//Add product 1 again
-instance.addProduct(product1);
-
-//Add product 2
-instance.addProduct(product2);
-//Find product 1 by id
-console.log(instance.getProductById(product1.id));
-//See all products
-console.log(instance.getProducts());
-*/
