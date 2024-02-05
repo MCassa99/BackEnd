@@ -7,12 +7,12 @@ export class ProductManager {
 
      async getProducts() {
           const products = JSON.parse(await fs.readFile(this.path, "utf-8"));
-          console.log(products);
+          return products;
      }
-          
+
      async getProductById(id) {
           const products = JSON.parse(await fs.readFile(this.path, "utf-8"));
-          console.log(products.find((product) => product.id == id) ? products.find((product) => product.id == id) : "Product not found");
+          return products.find((product) => product.id == id);
      }
 
      async addProduct(newProduct) {
@@ -24,12 +24,12 @@ export class ProductManager {
                if (index === -1) {
                     products.push(newProduct);
                     await fs.writeFile(this.path, JSON.stringify(products));
-                    console.log ("Product added successfully");
+                    return "Product added successfully"
                } else {
-                    console.log("Product already exists");
+                    return "Product already exists"
                }
           } else {
-               console.log("Invalid product data. Product must have title, description, price, thumbnail, code, and stock.");
+               return "Invalid product data. Product must have title, description, price, thumbnail, code, and stock."
           }
      }
 
@@ -44,10 +44,10 @@ export class ProductManager {
                     await fs.writeFile(this.path, JSON.stringify(products, null, "\t"));
                     return "Product modified successfully";
                } else {
-                    console.log("Product not found");
+                    return "Product not found";
                }
           } else {
-               console.log("Invalid product data. Product must have title, description, price, thumbnail, code, and stock.");
+               return "Invalid product data. Product must have title, description, price, thumbnail, code, and stock.";
           }
      }
 
@@ -57,9 +57,9 @@ export class ProductManager {
           if (index !== -1) {
                const productsFiltered = products.filter((product) => product.id !== id);
                await fs.writeFile(this.path, JSON.stringify(productsFiltered));
-               return "Product deleted successfully";
+               return "Product deleted successfully"
           } else {
-               console.log("Product not found");
+               return "Product not found"
           }
      }
 }
