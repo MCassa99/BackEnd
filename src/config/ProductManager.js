@@ -24,12 +24,12 @@ export class ProductManager {
                if (index === -1) {
                     products.push(newProduct);
                     await fs.writeFile(this.path, JSON.stringify(products));
-                    return "Product added successfully"
+                    return 200
                } else {
-                    return "Product already exists"
+                    return 400
                }
           } else {
-               return "Invalid product data. Product must have title, description, price, thumbnail, code, and stock."
+               return 400
           }
      }
 
@@ -42,12 +42,12 @@ export class ProductManager {
                if (index !== -1) {
                     products[index] = { ...product, id };
                     await fs.writeFile(this.path, JSON.stringify(products, null, "\t"));
-                    return "Product modified successfully";
+                    return 200;
                } else {
-                    return "Product not found";
+                    return 400;
                }
           } else {
-               return "Invalid product data. Product must have title, description, price, thumbnail, code, and stock.";
+               return 400;
           }
      }
 
@@ -57,9 +57,9 @@ export class ProductManager {
           if (index !== -1) {
                const productsFiltered = products.filter((product) => product.id !== id);
                await fs.writeFile(this.path, JSON.stringify(productsFiltered));
-               return "Product deleted successfully"
+               return 200
           } else {
-               return "Product not found"
+               return 400
           }
      }
 }
