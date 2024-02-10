@@ -8,6 +8,7 @@ export class Product {
           this.thumbnail = [];
           this.code = code;
           this.stock = stock;
+          this.status = true;
           this.id = crypto.randomBytes(16).toString("hex");
      }
 }

@@ -1,5 +1,5 @@
 import { promises as fs} from "fs";
-import { Product } from "./Product.js";
+import { Product } from "./product.js";
 
 export class ProductManager {
      constructor(path) {
@@ -17,10 +17,10 @@ export class ProductManager {
      }
 
      async addProduct(newProduct) {
-          const { title, description, price, thumbnail, code, stock } = newProduct;
+          const { title, description, price, code, stock } = newProduct;
           const products = JSON.parse(await fs.readFile(this.path, 'utf-8'));
 
-          if (title && description && price && thumbnail && code && stock) {
+          if (title && description && price && code && stock) {
                const index = products.findIndex((p) => p.code === newProduct.code);
                if (index === -1) {
                     const addedProduct = new Product(newProduct);
