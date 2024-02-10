@@ -1,11 +1,26 @@
 [
   {
-    "title": "Product 2",
-    "description": "Description 2",
-    "price": 200,
+    "title": {
+      "title": "Product 2",
+      "description": "Description 2",
+      "price": 200,
+      "thumbnail": [],
+      "code": "P3",
+      "stock": 20
+    },
     "thumbnail": [],
-    "code": "P2",
-    "stock": 20,
-    "id": "843abedbad7fe37a64bad3d06ec4e120"
+    "id": "156e91b3aa1a68588654f6e69ff20b69"
+  },
+  {
+    "title": {
+      "title": "Product 2",
+      "description": "Description 2",
+      "price": 200,
+      "thumbnail": [],
+      "code": "P3",
+      "stock": 20
+    },
+    "thumbnail": [],
+    "id": "bcf2043687d7c43cb833d25142f703e3"
   }
 ]

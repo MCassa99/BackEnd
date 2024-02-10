@@ -1,4 +1,5 @@
 import { promises as fs} from "fs";
+import { Product } from "./Product.js";
 
 export class ProductManager {
      constructor(path) {
@@ -22,7 +23,8 @@ export class ProductManager {
           if (title && description && price && thumbnail && code && stock) {
                const index = products.findIndex((p) => p.code === newProduct.code);
                if (index === -1) {
-                    products.push(newProduct);
+                    const addedProduct = new Product(newProduct);
+                    products.push(addedProduct);
                     await fs.writeFile(this.path, JSON.stringify(products));
                     return 200
                } else {
