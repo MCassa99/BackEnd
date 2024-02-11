@@ -1,1 +1,12 @@
-[{"title":{"title":"Product 2","description":"Description 2","price":200,"thumbnail":[],"code":"P3","stock":20},"thumbnail":[],"id":"156e91b3aa1a68588654f6e69ff20b69"},{"title":{"title":"Product 2","description":"Description 2","price":200,"thumbnail":[],"code":"P3","stock":20},"thumbnail":[],"id":"bcf2043687d7c43cb833d25142f703e3"},{"title":{"title":"Product 2","description":"Description 2","price":200,"thumbnail":[],"code":"P3","stock":20},"thumbnail":[],"id":"5e6f0871bac61e24c00d53273fa09535"}]
+[
+  {
+    "title": "Product 2",
+    "description": "Description 2",
+    "price": 200,
+    "thumbnail": [],
+    "code": "P25",
+    "stock": 20,
+    "status": true,
+    "id": "5e4cc11c40e712b5b2ea0e49625e4a42"
+  }
+]

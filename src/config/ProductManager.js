@@ -19,12 +19,10 @@ export class ProductManager {
      async addProduct(newProduct) {
           const { title, description, price, code, stock } = newProduct;
           const products = JSON.parse(await fs.readFile(this.path, 'utf-8'));
-
           if (title && description && price && code && stock) {
-               const index = products.findIndex((p) => p.code === newProduct.code);
+               const index = products.findIndex((product) => product.code === code);
                if (index === -1) {
-                    const addedProduct = new Product(newProduct);
-                    products.push(addedProduct);
+                    products.push(new Product(title, description, price, newProduct.thumbnail, code, stock));
                     await fs.writeFile(this.path, JSON.stringify(products));
                     return 200
                } else {
