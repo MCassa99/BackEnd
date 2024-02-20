@@ -31,9 +31,17 @@ productRouter.get('/', async (req, res) => {
             // Deberia devolver 'Listado de productos: ' + products
             /*El metodo slice() devuelve una copia de una parte del array dentro de un nuevo 
                 array empezando por inicio hasta fin(para que se formatee nuevamente el array de productos)*/
-            res.status(200).send(products.slice());
+                res.status(200).render('templates/home', {
+                    mostrarProductos: true,
+                    productos: products,
+                    css: 'home.css'
+                });
     } catch (error) {
-        res.status(500).send(validateStatus(500, 'mostrar') + error);
+        res.status(500).render('templates/error', {
+            error: error,
+            productos: products,
+            css: 'error.css'
+        });
     }
 })
 
