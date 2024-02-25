@@ -25,13 +25,22 @@ app.set('views', __dirname + '/views');
 
 //Chat
 const msgs = [];
-//Socket
+const users = [];
+//Socket io
 io.on('connection', (socket) => {
-    console.log('Nuevo usuario conectado');
+    console.log('El socket se ha conectado con el id: ' + socket.id);
+
+    socket.on('newUser', info => {
+        users.push(info);
+        console.log(users);
+        socket.broadcast.emit('newUser', users);
+        socket.emit('newUser', users);
+    });
 
     socket.on('message', info => {
         console.log(info);
         msgs.push(info);
+        socket.broadcast.emit('messageLogs', msgs);
         socket.emit('messageLogs', msgs);
     });
 });

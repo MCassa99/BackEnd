@@ -1,6 +1,6 @@
 const socket = io();
 
-const checkbox = document.getElementById('chatBox');
+const chatBox = document.getElementById('chatBox');
 const chat = document.getElementById('messageLogs');
 let user;
 
@@ -19,21 +19,23 @@ Swal.fire({
 }).then((result) => {
      user = result.value;
      console.log(user);
+     socket.emit('newUser', { user });
 });
 
-chatBox.addEventListener('keyup', (e) => {
-     if (e.key === 'Enter') {
-          if (chatBox.value.trim().length > 0) {
-               socket.emit('message', { user, msg: chatBox.value });
-               chatBox.value = '';
-          }
-          socket.emit('new-user', user);
+chatBox.addEventListener('change', () => {
+     if (chatBox.value.trim().length > 0) {
+          socket.emit('message', { user, msg: chatBox.value , time: new Date().toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})});
+          chatBox.value = '';
      }
 });
 
 socket.on('messageLogs', (msgs) => {
      chat.innerHTML = '';
      msgs.forEach(msg => {
-          chat.innerHTML += `<p class='message'><strong>${msg.user}:</strong> ${msg.msg}</p>`;
+          chat.innerHTML += `<div class='message'><strong>${msg.user}:</strong> ${msg.msg} <p class='date'> ${msg.time} </p></div>`;
      });
+});
+
+socket.on('newUser', (users) => {
+     chat.innerHTML += `<div class='new-user'><strong>${users.pop().user}:</strong> se ha unido al chat!</div>`;
 });
