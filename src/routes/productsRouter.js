@@ -1,30 +1,24 @@
 import { Router } from "express";
-import { ProductManager } from '../config/productManager.js';
+import { productModel } from "../models/product.js";
+//import { ProductManager } from '../config/productManager.js'; /* Mis Productos ahora dependen de la base de datos, no de un archivo json */
 
-const productManager = new ProductManager('./src/data/products.json');
+//const productManager = new ProductManager('./src/data/products.json'); /* Mis Productos ahora dependen de la base de datos, no de un archivo json */
 const productRouter = Router();
-
-//Validar el estado de la respuesta y devolver un mensaje
-function validateStatus(status, msg) {
-    const errorsvalues = {
-        200: `Producto ${msg} con exito`,
-        404: 'El producto no existe',
-        400: `Error en los ${msg} ingresados`,
-        500: `Error interno del servidor al ${msg} el producto`,
-    }
-    return errorsvalues[status];
-}
 
 //Listar todos los productos
 productRouter.get('/', async (req, res) => {
     try {
         const { limit } = req.query;
-        const products = await productManager.getProducts();
+        const products = await productModel.find().lean();
         // Consulto si hay un limite en la cantidad de productos a mostrar
         if (limit) {
             if (parseInt(limit) && parseInt(limit) > 0)
                 // Deberia devolver 'Listado de productos: ' + products.slice(0, limit)
-                res.send(products.slice(0, limit));
+                res.status(200).render('templates/home', {
+                    mostrarProductos: true,
+                    productos: products.slice(0, limit),
+                    css: 'home.css'
+                });
             else
                 res.status(400).send(validateStatus(400, 'limites'))
         } else 
@@ -49,14 +43,14 @@ productRouter.get('/', async (req, res) => {
 productRouter.get('/:id', async (req, res) => {
     try {
         const idProuducto = req.params.id;
-        const product = await productManager.getProductById(idProuducto);
+        const product = await productModel.findById(idProuducto);
         if (product)
             // Deberia devolver 'Producto solicitado con id: ' + idProuducto + '\nEs: ' + product
             res.status(200).send(product);
         else
-            res.status(404).send(validateStatus(404, ''));
+            res.status(404).send("El producto no existe");
     } catch (error) {
-        res.status(500).send(validateStatus(500, 'buscar') + error);
+        res.status(500).send('Error interno del servidor al buscar el producto' + error);
     }
 })
 
@@ -64,11 +58,11 @@ productRouter.get('/:id', async (req, res) => {
 productRouter.post('/', async (req, res) => {
     try {
         const product = req.body;
-        const status = await productManager.addProduct(product);
+        const status = await productModel.create(product);
         //Simplificar el mensaje de error
-        res.status(status).send(validateStatus(status, 'creados'));
+        res.status(201).send("Producto creado con exito");
     } catch (error) {
-        res.status(500).send(validateStatus(500, 'crear') + error);
+        res.status(500).send("Error al crear producto" + error);
     }
 })
 
@@ -77,11 +71,11 @@ productRouter.put('/:id', async (req, res) => {
     try {
         const id = req.params.id;
         const updateProduct = req.body;
-        const status = await productManager.modifyProduct(id, updateProduct);
+        const status = await productModel.findByIdAndUpdate(id, updateProduct).lean();
         //Simplificar el mensaje de error
-        res.status(status).send(validateStatus(status, 'modificado'));
+        res.status(200).send("Producto modificado con exito");
     } catch (error) {
-        res.status(500).send(validateStatus(500, 'modificar') + error);
+        res.status(500).send("Error al modificar Producto" + error);
     }
 })
 
@@ -89,11 +83,11 @@ productRouter.put('/:id', async (req, res) => {
 productRouter.delete('/:id', async (req, res) => {
     try {
         const id = req.params.id;
-        const status = await productManager.deleteProduct(id);
+        const status = await productModel.findByIdAndDelete(id);
         //Simplificar el mensaje de error
-        res.status(status).send(validateStatus(status, 'eliminado'));
+        res.status(200).send("Producto eliminado con exito");
     } catch (error) {
-        res.status(500).send(validateStatus(500, 'eliminar') + error);
+        res.status(500).send("Error al eliminar producto" + error);
     }
 })
 

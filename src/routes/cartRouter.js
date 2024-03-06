@@ -1,24 +1,24 @@
 import { Router } from 'express';
-import { CartManager } from '../config/cartManager.js';
+//import { CartManager } from '../config/cartManager.js'; /* Mis Productos ahora dependen de la base de datos, no de un archivo json */
+import cartModel from '../models/cart.js'; 
 
-const cartManager = new CartManager('./src/data/cart.json');
+//const cartManager = new CartManager('./src/data/cart.json'); /* Mis Productos ahora dependen de la base de datos, no de un archivo json */
 const cartRouter = Router();
 
-//Validar el estado de la respuesta y devolver un mensaje
-function validateStatus(status, msg) {
-    const errorsvalues = {
-        200: `Producto ${msg} con exito`,
-        404: 'El producto no existe',
-        400: `Error en los ${msg} ingresados`,
-        500: `Error interno del servidor al ${msg} el producto`,
+cartRouter.post('/', async (req, res) => {
+    try {
+        const createCart = await cartModel.create({products: []});
+        res.status(201).send(createCart);
+    } catch (error) {
+        res.status(500).send('Error al crear carrito ', error);
     }
-    return errorsvalues[status];
-}
+});
 
 //Listar todos los productos
-cartRouter.get('/', async (req, res) => {
+cartRouter.get('/:cid', async (req, res) => {
     try {
-        const cart = await cartManager.getCart();
+        const cartID = req.params.id;
+        const cart = await cartModel.findById(cartID);
         return res.status(200).send(cart);
     } catch (error) {
         return res.status(500).send('Error interno del servidor al mostrar el carrito');
@@ -26,14 +26,24 @@ cartRouter.get('/', async (req, res) => {
 });
 
 //Agregar un producto al carrito
-cartRouter.post('/:id', async (req, res) => {
+cartRouter.post('/:cid/:pid', async (req, res) => {
     try {
-        const productID = req.params.id;
-        const quantity = req.body.quantity;
-        const status = await cartManager.addProductToCart(productID, quantity);
-        return res.status(status).send(validateStatus(status, 'agregado'));
+        const cartID = req.params.cid;
+        const productID = req.params.pid;
+        const { quantity } = req.body;
+        const cart = await cartModel.findById(cartID);
+        //Me fijo si el producto ya esta en el carrito
+        const index = cart.products.findIndex(product => product.id_prod == productID);
+        if (index !== -1) {
+            //Si cambio aca el = por +=, me suma la cantidad en vez de reemplazarla
+            cart.products[index].quantity = quantity;
+        } else {
+            cart.products.push({ id_prod: productID, quantity });
+        }
+        const status = await cartModel.findByIdAndUpdate(cartID, cart);
+        return res.status(200).send(status);
     } catch (error) {
-        return res.status(500).send('Error interno del servidor al agregar el producto');
+        return res.status(500).send('Error interno del servidor al agregar el producto' + error);
     }
 });
 
@@ -42,17 +52,17 @@ cartRouter.post('/:id', async (req, res) => {
 cartRouter.delete('/:id', async (req, res) => {
     try {
         const productID = req.params.id;
-        const status = await cartManager.deleteProductFromCart(productID);
-        return res.status(status).send(validateStatus(status, 'eliminado'));
+        const status = await cartModel.findByIdAndDelete(productID);
+        return res.status(status).send("Producto eliminado del carrito con exito");
     } catch (error) {
-        return res.status(500).send('Error interno del servidor al eliminar el producto');
+        return res.status(500).send('Error interno del servidor al eliminar el producto' + error);
     }
 });
 
 //Vaciar carrito
 cartRouter.delete('/', async (req, res) => {
     try {
-        const status = await cartManager.deleteCart();
+        const status = await cartModel.deleteMany();
         return res.status(status).send(validateStatus(status, 'vaciar'));
     } catch (error) {
         return res.status(500).send('Error interno del servidor al vaciar el carrito');

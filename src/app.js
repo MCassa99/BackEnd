@@ -2,7 +2,10 @@ import express from 'express';
 import productRouter from './routes/productsRouter.js';
 import cartRouter from './routes/cartRouter.js';
 import chatRouter from './routes/chatRouter.js';
+import userRouter from './routes/userRouter.js';
+import { messageModel } from './models/messages.js';
 import upload from './config/multer.js';
+import mongoose from 'mongoose';
 import { __dirname } from './path.js';
 import { engine } from 'express-handlebars';
 import { Server } from 'socket.io';
@@ -17,6 +20,15 @@ const server = app.listen(PORT, () => {
 })
 const io = new Server(server);
 
+//Conexión a la base de datos
+mongoose.connect('mongodb+srv://mcassa99:pruebaCoderHouse@cluster0.gudv9d7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+    .then(() => {
+        console.log('Conexión a la base de datos exitosa');
+    })
+    .catch((error) => {
+        console.log('Error al conectarse a la base de datos: ' + error);
+    });
+
 //Middlewares
 app.use(express.json());
 app.engine('handlebars', engine());
@@ -24,7 +36,6 @@ app.set('view engine', 'handlebars');
 app.set('views', __dirname + '/views');
 
 //Chat
-const msgs = [];
 const users = [];
 //Socket io
 io.on('connection', (socket) => {
@@ -37,11 +48,14 @@ io.on('connection', (socket) => {
         socket.emit('newUser', users);
     });
 
-    socket.on('message', info => {
-        console.log(info);
-        msgs.push(info);
-        socket.broadcast.emit('messageLogs', msgs);
-        socket.emit('messageLogs', msgs);
+    socket.on('message', async (msg) => {
+        try {
+            await messageModel.create(msg);
+            socket.broadcast.emit('messageLogs', msgs);
+            socket.emit('messageLogs', msgs);
+        } catch (error) {
+            console.log('Error al enviar el mensaje: ' + error);
+        }
     });
 });
 
@@ -50,6 +64,7 @@ app.use('/public', express.static(__dirname + '/public'));
 app.use('/api/products', productRouter, express.static(__dirname + '/public'));
 app.use('/api/chat', chatRouter, express.static(__dirname + '/public'));
 app.use('/api/cart', cartRouter);
+app.use('/api/users', userRouter);
 app.post('/upload', upload.single('product'), (req, res) => {
     try {
         console.log(req.file);
