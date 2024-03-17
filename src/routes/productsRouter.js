@@ -8,34 +8,31 @@ const productRouter = Router();
 //Listar todos los productos
 productRouter.get('/', async (req, res) => {
     try {
-        const { limit } = req.query;
-        const products = await productModel.find().lean();
-        // Consulto si hay un limite en la cantidad de productos a mostrar
-        if (limit) {
-            if (parseInt(limit) && parseInt(limit) > 0)
-                // Deberia devolver 'Listado de productos: ' + products.slice(0, limit)
-                res.status(200).render('templates/home', {
-                    mostrarProductos: true,
-                    productos: products.slice(0, limit),
-                    css: 'home.css'
-                });
-            else
-                res.status(400).send(validateStatus(400, 'limites'))
-        } else 
-            // Deberia devolver 'Listado de productos: ' + products
-            /*El metodo slice() devuelve una copia de una parte del array dentro de un nuevo 
-                array empezando por inicio hasta fin(para que se formatee nuevamente el array de productos)*/
-                res.status(200).render('templates/home', {
-                    mostrarProductos: true,
-                    productos: products,
-                    css: 'home.css'
-                });
+        let letFilter;
+        const { limit, page, filter, sort } = req.query;
+        const actualPage = page != undefined ? page : 1;
+        const limitPerPage = limit != undefined ? limit : 10;
+
+        // Consulto si hay un filtro
+        if (filter == 'true' || filter == 'false') {
+            letFilter = 'status';
+        } else {
+            if (filter != undefined){
+                letFilter = 'category';
+            }
+        }
+
+        const query = letFilter ? { [letFilter]: filter } : { };
+        const sortType = sort != undefined ? {price : sort} : { };
+
+        // Consulto los productos con el filtro y paginacion
+        const products = await productModel.paginate(query, {limit: limitPerPage, page: actualPage, sort: sortType});
+        
+        // Deberia devolver 'Listado de productos: ' + products.slice(0, limit)
+        res.status(200).send(products);
+            
     } catch (error) {
-        res.status(500).render('templates/error', {
-            error: error,
-            productos: products,
-            css: 'error.css'
-        });
+        res.status(500).send('Error interno del servidor al listar los productos' + error);
     }
 })
 
