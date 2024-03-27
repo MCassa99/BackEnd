@@ -5,9 +5,12 @@ import MongoStore from 'connect-mongo'
 import cookieParser from 'cookie-parser'
 import messageModel from './models/messages.js'
 import appRouter from './routes/appRouter.js';
+import initializePassport from './config/passport/passport.js'
+import passport from 'passport'
 import { Server } from 'socket.io'
 import { engine } from 'express-handlebars'
 import { __dirname } from './path.js'
+import  Template from 'handlebars'
 
 //Config
 const app = express();
@@ -38,6 +41,11 @@ app.use(session({
     })
 }));
 
+//Passport
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(cookieParser('secret0000'));
 app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');
@@ -45,7 +53,7 @@ app.set('views', __dirname + '/views');
 
 //Routes
 app.use('/', appRouter);
-
+/*
 //Cookies Routes
 //Obtener cookie
 appRouter.get('/getCookie', (req, res) => {
@@ -59,9 +67,7 @@ appRouter.get('/setCookie', (req, res) => {
 appRouter.get('/deleteCookie', (req, res) => {
     res.clearCookie('CookieCookie').send('Cookie eliminada');
 });
-
-
-
+*/
 //Chat
 const users = [];
 //Socket io
@@ -84,4 +90,8 @@ io.on('connection', (socket) => {
             console.log('Error al enviar el mensaje: ' + error);
         }
     });
+});
+
+Template.registerHelper("log", function(something) {
+    console.log(something);
 });

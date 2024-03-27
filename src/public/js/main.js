@@ -4,6 +4,7 @@ const chatBox = document.getElementById('chatBox');
 const chat = document.getElementById('messageLogs');
 let user;
 
+/*
 Swal.fire({
      title: 'Bienvenido!',
      input: 'text',
@@ -21,7 +22,7 @@ Swal.fire({
      console.log(user);
      socket.emit('newUser', { user });
 });
-
+*/
 chatBox.addEventListener('change', () => {
      if (chatBox.value.trim().length > 0) {
           socket.emit('message', { user, msg: chatBox.value , time: new Date().toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'})});
