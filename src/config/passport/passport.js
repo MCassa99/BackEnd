@@ -1,10 +1,11 @@
 import local from 'passport-local'
 import passport from 'passport'
+import GithubStrategy from 'passport-github2'
+import crypto from 'crypto'
 import { userModel } from '../../models/user.js'
 import { createHash, validateHash } from '../../utils/bcrypt.js'
 
 //Configuración de passport con uno o mas Middleware
-
 const localStrategy = local.Strategy;
 
 const initializePassport = () => {
@@ -47,6 +48,31 @@ const initializePassport = () => {
             return done(error)
         }
     }));
+
+    passport.use('github', new GithubStrategy({
+        clientID: process.env.GITHUB_CLIENT_ID,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET,
+        callbackURL: process.env.GITHUB_CALLBACK_URL
+    }, async (accessToken, refreshToken, profile, done) => {
+        try {
+            console.log('accessToken: ', accessToken);
+            console.log('refreshToken: ', refreshToken);
+            const user = await userModel.findOne({ email: profile._json.email }).lean();
+            if (user){
+                done(null, user);
+            } else {
+                const randomPass = crypto.randomUUID();
+                const userCreated = await userModel.create({ first_name: profile._json.name, last_name: ' ', email: profile._json.email, age: 18, password: createHash(`${profile._json.email}${randomPass}`), role: role });
+                console.log(randomPass);
+                return done(null, userCreated)
+            }
+
+        } catch (error) {
+            return done(error)
+        }
+    }));
+
+
 }
 
 export default initializePassport;
