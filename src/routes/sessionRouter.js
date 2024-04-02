@@ -34,7 +34,7 @@ sessionRouter.get('/githubSession', passport.authenticate('github'), async (req,
         email: req.user.email,
         first_name: req.user.name
     }
-    res.redirect('/api/products');
+    res.redirect('/');
 });
 
 sessionRouter.post('/register', passport.authenticate('register'), async (req, res) => {

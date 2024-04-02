@@ -5,6 +5,11 @@ import crypto from 'crypto'
 import { userModel } from '../../models/user.js'
 import { createHash, validateHash } from '../../utils/bcrypt.js'
 
+const GITHUB_CLIENT_ID = "Iv1.1d328648cba24b5a";
+const GITHUB_CLIENT_SECRET = "d872bbe94b0f0f89b0f34344bd7cd3d5abbbfb47";
+const GITHUB_CALLBACK_URL = "http://localhost:3000/api/session/githubSession";
+
+
 //Configuración de passport con uno o mas Middleware
 const localStrategy = local.Strategy;
 
@@ -50,9 +55,9 @@ const initializePassport = () => {
     }));
 
     passport.use('github', new GithubStrategy({
-        clientID: process.env.GITHUB_CLIENT_ID,
-        clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: process.env.GITHUB_CALLBACK_URL
+        clientID: GITHUB_CLIENT_ID,
+        clientSecret: GITHUB_CLIENT_SECRET,
+        callbackURL: GITHUB_CALLBACK_URL
     }, async (accessToken, refreshToken, profile, done) => {
         try {
             console.log('accessToken: ', accessToken);
@@ -61,9 +66,10 @@ const initializePassport = () => {
             if (user){
                 done(null, user);
             } else {
+                console.log('profile: ', profile);
                 const randomPass = crypto.randomUUID();
-                const userCreated = await userModel.create({ first_name: profile._json.name, last_name: ' ', email: profile._json.email, age: 18, password: createHash(`${profile._json.email}${randomPass}`), role: role });
-                console.log(randomPass);
+                const userCreated = await userModel.create({ first_name: profile._json.name, last_name: ' ', email: profile._json.email, age: 18, password: createHash(`${profile._json.email}${randomPass}`)});
+                console.log('Random Pass: ', randomPass);
                 return done(null, userCreated)
             }
 
