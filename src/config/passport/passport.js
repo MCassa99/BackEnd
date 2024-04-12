@@ -4,6 +4,7 @@ import GithubStrategy from 'passport-github2'
 import crypto from 'crypto'
 import { userModel } from '../../models/user.js'
 import { createHash, validateHash } from '../../utils/bcrypt.js'
+import { jwtStrategy } from './strategies/jwtStrategy.js'
 
 const GITHUB_CLIENT_ID = "Iv1.1d328648cba24b5a";
 const GITHUB_CLIENT_SECRET = "d872bbe94b0f0f89b0f34344bd7cd3d5abbbfb47";
@@ -78,7 +79,7 @@ const initializePassport = () => {
         }
     }));
 
-
+    passport.use('jwt', jwtStrategy);
 }
 
 export default initializePassport;

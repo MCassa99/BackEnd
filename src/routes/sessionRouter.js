@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { userModel } from "../models/user.js";
 import passport from "passport";
 
 const sessionRouter = Router();
@@ -25,6 +24,11 @@ sessionRouter.get('/login', passport.authenticate('login'), async (req, res) => 
     } catch (error) {
         res.status(500).send('Error al loguearse');
     }
+});
+
+// Login form route
+sessionRouter.get('/loginForm', (req, res) => {
+    res.render('templates/login'); // Assuming you have a login template file named 'login.ejs'
 });
 
 sessionRouter.get('/github', passport.authenticate('github', {scope: ['user:email']}), async (req, res) => { });
@@ -53,6 +57,10 @@ sessionRouter.get('/logout', (req, res) => {
     req.session.destroy((error => 
         error ? res.status(500).send('Error al cerrar la sesion') : res.status(200).redirect('/')   
     ));
+});
+
+sessionRouter.get('/testJWT', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    res.status(200).send(req.user);
 });
 
 export default sessionRouter;
