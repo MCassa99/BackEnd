@@ -1,5 +1,6 @@
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import { userModel } from "../../../models/user.js";
+import varenv from '../../../dotenv.js';
 
 const cookieExtractor = (req) => {
      console.log('req.cookies: ', req.cookies);
@@ -11,7 +12,7 @@ const cookieExtractor = (req) => {
 const jwtOptions = {
      jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]), /* Extrae el token del header de la petición con Postman */
      //jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), /* Extrae el token del header de la petición en el navegador */
-     secretOrKey: 'coderhouse' /* Contraseña secreta para firmar el token */
+     secretOrKey: varenv.jwtSecret /* Contraseña secreta para firmar el token */
 };
 
 export const jwtStrategy = new JwtStrategy(jwtOptions, async (payload, done) => {

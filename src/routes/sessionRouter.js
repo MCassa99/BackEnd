@@ -8,6 +8,7 @@ const sessionRouter = Router();
 sessionRouter.get('/getSession', (req, res) => {
     res.send(req.session);
 });
+
 //Agregar session
 sessionRouter.get('/login', passport.authenticate('login'), async (req, res) => {
     try {
@@ -39,6 +40,11 @@ sessionRouter.get('/githubSession', passport.authenticate('github'), async (req,
         first_name: req.user.name
     }
     res.redirect('/');
+});
+
+sessionRouter.get('/current', passport.authenticate('jwt'), async (req, res) => {
+    console.log(req);
+    res.status(200).send("Usuario Logueado Correctamente");
 });
 
 sessionRouter.post('/register', passport.authenticate('register'), async (req, res) => {

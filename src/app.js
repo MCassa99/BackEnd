@@ -1,3 +1,4 @@
+import varenv from './dotenv.js';
 import express from 'express'
 import mongoose from 'mongoose'
 import session from 'express-session'
@@ -16,6 +17,7 @@ import  Template from 'handlebars'
 const app = express();
 const PORT = 3000;
 
+
 //Server
 const server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
@@ -24,7 +26,7 @@ const server = app.listen(PORT, () => {
 const io = new Server(server);
 
 //Conexión a la base de datos
-mongoose.connect('mongodb+srv://mcassa99:pruebaCoderHouse@cluster0.gudv9d7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+mongoose.connect(varenv.mongodb)
     .then(() => { console.log('Conexión a la base de datos exitosa'); })
     .catch((error) => { console.log('Error al conectarse a la base de datos: ' + error); });
 
@@ -32,11 +34,11 @@ mongoose.connect('mongodb+srv://mcassa99:pruebaCoderHouse@cluster0.gudv9d7.mongo
 app.use(express.json());
 
 app.use(session({
-    secret: 'secret0000',
+    secret: varenv.sessionSecret,
     resave: true,
     saveUninitialized: true,
     store: MongoStore.create({ 
-        mongoUrl: 'mongodb+srv://mcassa99:pruebaCoderHouse@cluster0.gudv9d7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
+        mongoUrl: varenv.mongodb,
         ttl: 600, // 10 minutos
     })
 }));
@@ -46,7 +48,7 @@ initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(cookieParser('secret0000'));
+app.use(cookieParser(varenv.cookieSecret));
 app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');
 app.set('views', __dirname + '/views');
