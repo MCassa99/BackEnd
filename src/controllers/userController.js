@@ -1,11 +1,20 @@
-import { userModel } from '../models/user.js'
+import User from '../dao/classes/userDao.js';
 
-export const getUsers = async () => {
-     const users = await userModel.find();
-     return users;
+const userService = new User();
+
+export const getUsers = async (req, res) => {
+     const user = await userService.getUsers();
+     res.status(200).send(user);
 }
 
-export const createUser = async (name, surname, age, email, password) => {
-     const newUser = await userModel.create({name, surname, age, email, password});
-     return newUser;
+export const getUserById = async (req, res) => {
+     const { id } = req.params;
+     const user = await userService.getUserById(id);
+     res.status(200).send(user);
+}
+
+export const createUser = async (req, res) => {
+     const user = req.body;
+     const newUser = await userService.createUser(user);
+     res.status(200).send(newUser);
 }
