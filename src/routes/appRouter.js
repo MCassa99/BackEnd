@@ -4,6 +4,7 @@ import cartRouter from './cartRouter.js';
 import chatRouter from './chatRouter.js';
 import userRouter from './userRouter.js';
 import sessionRouter from './sessionRouter.js';
+import mailRouter from './mailRouter.js';
 import upload from '../config/multer.js';
 import { __dirname } from '../path.js';
 
@@ -20,6 +21,8 @@ appRouter.use('/api/chat', chatRouter, express.static(__dirname + '/public'));
 appRouter.use('/api/cart', cartRouter);
 appRouter.use('/api/users', userRouter);
 appRouter.use('/api/session', sessionRouter);
+appRouter.use('/api/mail', mailRouter);
+
 
 appRouter.post('/upload', upload.single('product'), (req, res) => {
     try {

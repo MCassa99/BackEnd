@@ -7,7 +7,9 @@ const varenv = {
      salt: process.env.SALT,
      sessionSecret: process.env.SESSION_SECRET,
      cookieSecret: process.env.COOKIE_SECRET,
-     jwtSecret: process.env.JWT_SECRET
+     jwtSecret: process.env.JWT_SECRET,
+     emailUser: process.env.EMAIL_USER,
+     emailPassword: process.env.EMAIL_PASSWORD
 }
 
 export default varenv;

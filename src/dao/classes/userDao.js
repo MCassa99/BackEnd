@@ -1,5 +1,7 @@
 import { userModel } from '../../models/user.js';
 
+/* Este DAO es utilizado solamente por el controlador de usuario, solo por fines didacticos, en realidad este no existiria. */
+
 export default class User {
      getUsers = async () => {
           try {
